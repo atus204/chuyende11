@@ -10,7 +10,7 @@ class StudentController extends Controller
     // Hiển thị danh sách + tìm kiếm + sắp xếp + phân trang
     public function index(Request $request)
     {
-        $query = Student::query();
+        $query = Student::with('courses');
 
         // Tìm kiếm theo tên
         if ($request->search) {
@@ -21,7 +21,7 @@ class StudentController extends Controller
         $query->orderBy('name', 'asc');
 
         // Phân trang (5 bản ghi / trang)
-        $students = $query->paginate(5);
+        $students = $query->paginate(5)->withQueryString();
 
         return view('students.index', compact('students'));
     }
@@ -36,14 +36,14 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         // Validation
-        $request->validate([
-            'name' => 'required',
-            'major' => 'required',
-            'email' => 'required|email|unique:students,email'
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'major' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:students,email',
         ]);
 
         // Lưu vào DB
-        Student::create($request->all());
+        Student::create($data);
 
         return redirect()->route('students.index')
                          ->with('success', 'Thêm sinh viên thành công');
