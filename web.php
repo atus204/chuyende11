@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -9,9 +9,10 @@ use App\Http\Controllers\StudentController;
 |--------------------------------------------------------------------------
 */
 
+// Trang mặc định (có thể giữ hoặc xoá)
 Route::get('/', function () {
-    return redirect('/students');
+    return redirect('/products');
 });
 
-// Route quản lý sinh viên (CRUD)
-Route::resource('students', StudentController::class);
+// Route CRUD sản phẩm
+Route::resource('products', ProductController::class);

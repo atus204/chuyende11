@@ -1,76 +1,65 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Danh sách sinh viên</title>
-
-    <!-- Bootstrap -->
+    <title>Quản lý sản phẩm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="container mt-4">
 
-    <h2 class="mb-4">📚 Danh sách sinh viên</h2>
+<h2>Quản lý sản phẩm</h2>
 
-    <!-- Thông báo -->
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+@if(session('success'))
+<div class="alert alert-success">{{ session('success') }}</div>
+@endif
 
-    <!-- Nút thêm -->
-    <a href="{{ route('students.create') }}" class="btn btn-success mb-3">
-        ➕ Thêm sinh viên
-    </a>
+<form method="GET" class="mb-3">
+    <input type="text" name="search" class="form-control" placeholder="Tìm sản phẩm...">
+</form>
 
-    <!-- Bảng -->
-    <table class="table table-bordered table-hover text-center">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Tên</th>
-                <th>Ngành</th>
-                <th>Email</th>
-                <th width="180">Hành động</th>
-            </tr>
-        </thead>
+<a href="{{ route('products.create') }}" class="btn btn-success mb-3">Thêm</a>
 
-        <tbody>
-            @forelse($students as $key => $sv)
-            <tr>
-                <td>{{ $students->firstItem() + $key }}</td>
-                <td>{{ $sv->name }}</td>
-                <td>{{ $sv->major }}</td>
-                <td>{{ $sv->email }}</td>
-                <td>
-                    <!-- Sửa -->
-                    <a href="{{ route('students.edit', $sv->id) }}" class="btn btn-warning btn-sm">
-                        ✏️ Sửa
-                    </a>
+<table class="table table-bordered">
+<tr>
+    <th>Tên</th>
+    <th>Giá</th>
+    <th>Số lượng</th>
+    <th>Danh mục</th>
+    <th>Trạng thái</th>
+    <th>Hành động</th>
+</tr>
 
-                    <!-- Xoá -->
-                    <form action="{{ route('students.destroy', $sv->id) }}" method="POST" style="display:inline-block;">
-                        @csrf
-                        @method('DELETE')
-                        <button onclick="return confirm('Bạn có chắc muốn xoá?')" class="btn btn-danger btn-sm">
-                            🗑 Xoá
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="5">Không có dữ liệu</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+@foreach($products as $p)
+<tr>
+    <td>{{ $p->name }}</td>
+    <td>{{ $p->price }}</td>
+    <td>{{ $p->quantity }}</td>
+    <td>{{ $p->category }}</td>
 
-    <!-- Phân trang -->
-    <div class="d-flex justify-content-center">
-        {{ $students->links('pagination::bootstrap-5') }}
-    </div>
+    <td>
+        @if($p->quantity == 0)
+            <span class="text-danger">Hết hàng</span>
+        @elseif($p->quantity < 5)
+            <span class="text-warning">Sắp hết</span>
+        @else
+            <span class="text-success">Còn hàng</span>
+        @endif
+    </td>
+
+    <td>
+        <a href="{{ route('products.edit',$p->id) }}" class="btn btn-warning btn-sm">Sửa</a>
+
+        <form action="{{ route('products.destroy',$p->id) }}" method="POST" style="display:inline">
+            @csrf
+            @method('DELETE')
+            <button class="btn btn-danger btn-sm">Xóa</button>
+        </form>
+    </td>
+</tr>
+@endforeach
+</table>
+
+{{ $products->links() }}
 
 </body>
 </html>
